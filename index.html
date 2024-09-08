@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link href="style.css" rel="stylesheet" media="all">
+<title>Firebase_version9_RealtimeDB(G'sACADEMY初学者用サンプル)</title>
+</head>
+
+<body>
+<!-- コンテンツ表示画面 -->
+<div class="name">
+    <img src="hito-icon.png" width="30px">
+    <input type="text" id="uname">
+</div>
+<br>
+<textarea id="text" cols="30" rows="10"></textarea>
+<button id="send"><img src="kamihikouki_transparent.png" width=30px></button>
+<div id="output" style="overflow: auto; height:600px;"></div>
+<!--/ コンテンツ表示画面 -->
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved, onChildChanged, update } 
+    from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    // Firebaseの初期設定
+    const firebaseConfig = {
+        apiKey: "YOUR_FIREBASE_API_KEY",
+        authDomain: "sample-bd207.firebaseapp.com",
+        projectId: "sample-bd207",
+        storageBucket: "sample-bd207.appspot.com",
+        messagingSenderId: "206551184147",
+        appId: "1:206551184147:web:84d712c71a68a4e31a60e6",
+        measurementId: "G-YESDRMQJXV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, "chat");
+
+    const API_KEY = "AIzaSyBBqqOxGkRkL1E-D67GDIFpmWRyKbPH7_8"; // Google Generative AIのAPIキー
+    const genAI = new GoogleGenerativeAI(API_KEY);
+
+    // チャットメッセージ送信処理
+    $("#send").on("click", async function() {
+        const userName = $("#uname").val();
+        const userMessage = $("#text").val();
+
+        if (userName && userMessage) {
+            // Firebaseに送信者のメッセージを保存
+            const newPostRef = push(dbRef);
+            set(newPostRef, {
+                uname: userName,
+                text: userMessage
+            });
+
+            // Google Generative AIにリクエストを送信してAIの応答を取得
+            try {
+                const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                const response = await model.generate({ prompt: userMessage });
+                const aiResponse = response.choices[0].message.content;
+
+                // AIの応答をFirebaseに保存
+                const aiPostRef = push(dbRef);
+                set(aiPostRef, {
+                    uname: "AI Bot",
+                    text: aiResponse
+                });
+
+                console.log("AI response:", aiResponse);
+            } catch (error) {
+                console.error("AI応答エラー:", error);
+            }
+        }
+    });
+
+    // メッセージが追加されたときに表示を更新
+    onChildAdded(dbRef, function(data) {
+        const msg = data.val();
+        const key = data.key;
+        let html = '<p id="' + key + '">';
+        html += '<br>';
+        html += '<span class="username">' + msg.uname + '</span>';
+        html += '<img class="user-icon" src="hito-icon.png" width="30px" style="margin:10px;">';
+        html += '<br>';
+        html += '<span contentEditable="true" id="' + key + '_update">' + msg.text + '</span>';
+        html += '<span class="remove" data-key="' + key + '"><img src="dustbox.png" width="15px"></span>';
+        html += '<span class="update" data-key="' + key + '"><img src="koshin.png" width="15px"></span>';
+        html += '</p>';
+        $("#output").prepend(html);
+    });
+
+    // メッセージの削除処理
+    $("#output").on("click", ".remove", function() {
+        const key = $(this).attr("data-key");
+        const removeItem = ref(db, "chat/" + key);
+        remove(removeItem);
+    });
+
+    // メッセージの更新処理
+    $("#output").on("click", ".update", function() {
+        const key = $(this).attr("data-key");
+        update(ref(db, "chat/" + key), {
+            text: $("#" + key + '_update').html()
+        });
+    });
+
+    // Firebaseからメッセージが削除されたときの処理
+    onChildRemoved(dbRef, (data) => {
+        $("#" + data.key).remove();
+    });
+
+    // Firebaseでメッセージが更新されたときの処理
+    onChildChanged(dbRef, (data) => {
+        $("#" + data.key + '_update').html(data.val().text).fadeOut(800).fadeIn(800);
+    });
+</script>
+</body>
+</html>
