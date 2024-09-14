@@ -1,9 +1,0 @@
-#area{
-}
-.title{
-text-align: center;
-}
-#view{
-    display: grid;
-    grid-template-columns: 200px repeat(4, 1fr) ;
-}
