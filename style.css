@@ -1,0 +1,107 @@
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #faf8f5; /* 背景色を柔らかいベージュに */
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+h1.title {
+    color: #5f4b8b; /* タイトルの文字色をおしゃれな紫に */
+    font-size: 3em;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+h1 span {
+    color: #ff9a8b; /* ピンクオレンジでアクセント */
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+p {
+    font-size: 1.2em;
+    color: #5f4b8b; /* タイトル下の文字色を調和させる */
+}
+
+#view {
+    padding: 20px;
+    border: none;
+    width: 90%;
+    margin: 20px auto;
+    background-color: #ffffff;
+    border-radius: 20px; /* 角を大きく丸める */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* 少し影を大きくして、浮いた感じに */
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.days-container {
+    display: grid;
+    grid-template-rows: repeat(5, 1fr); /* 5行にする */
+    gap: 20px; /* 各行間のスペースを指定 */
+}
+
+.day-box {
+    background-color: #f9f4ff;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    height: 100%; /* 枠の高さを揃える */
+}
+
+.day-title {
+    font-size: 1.3em;
+    color: #5f4b8b;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.weather-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch; /* 各ボックスの高さを揃える */
+}
+
+.weather-box {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100px;
+    text-align: center;
+    flex-grow: 1; /* 横並びの各ボックスのサイズを均等にする */
+    margin: 5px;
+}
+
+.time {
+    font-weight: bold;
+    color: #ff9a8b; /* 時刻の文字を強調 */
+}
+
+.wind, .weather, .rain {
+    font-size: 0.9em;
+    margin: 5px 0;
+    color: #555;
+}
+
+.logo img {
+    width: 50px;
+    margin-bottom: 10px;
+}
+
+/* スクロールバーをカスタマイズ */
+#view::-webkit-scrollbar {
+    width: 10px;
+}
+
+#view::-webkit-scrollbar-thumb {
+    background-color: #ff9a8b; /* ピンクのスクロールバー */
+    border-radius: 10px;
+}
+
+#view::-webkit-scrollbar-track {
+    background-color: #faf8f5;
+}
